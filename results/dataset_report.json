@@ -1,0 +1,29 @@
+{
+  "n_samples": 23256,
+  "n_features": 19,
+  "missing_values": {
+    "Dewpoint Temp 2m": 0,
+    "Temp 2m": 0,
+    "u- component 10m of wind": 0,
+    "v- component 10mof wind": 0,
+    "Volumetric Soil Water Layer 1": 0,
+    "Volumetric Soil Water Layer 2": 0,
+    "Volumetric Soil Water Layer 3": 0,
+    "Volumetric Soil Water Layer 4": 0,
+    "Skin Temp": 0,
+    "Surface Pressure": 0,
+    "Total Precipitation": 0,
+    "Soil Temp Level 1": 0,
+    "Soil Temp level 2": 0,
+    "Soil Temp level 3": 0,
+    "Soil Temp Level 4": 0,
+    "Surface Solar Radiation Downwards": 0,
+    "Solar Thermal Radiation Downwards": 0,
+    "latitude": 0,
+    "longitude": 0
+  },
+  "binary_class_balance": {
+    "below_median (0)": 11628,
+    "above_or_equal_median (1)": 11628
+  }
+}

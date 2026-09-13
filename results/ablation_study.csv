@@ -1,0 +1,5 @@
+Experiment,Attention,Bidirectional,RMSE,MAE,Parameters
+"Baseline (no attention, no BiLSTM)",False,False,2.303030345140276,1.7777549394233532,94881
++ Attention only,True,False,1.9973450853349013,1.5446918171280686,95969
++ Bidirectional only,False,True,2.0900442799166887,1.6321039199589484,185505
+Proposed (Attention + Bidirectional),True,True,2.030557796805733,1.6194198172196308,186593

@@ -1,0 +1,78 @@
+MODEL DESCRIPTIONS
+==================
+(Parameter counts computed analytically from the standard Keras LSTM
+formula: params = 4 * units * (input_dim + units + 1))
+
+Input to every model: sliding windows of 12 hours x 16 features
+(all ERA5 variables except latitude, longitude, and the target "Temp 2m").
+
+------------------------------------------------------------
+1. BASELINE MODEL — build_baseline_lstm()  (src/model.py)   
+------------------------------------------------------------
+Layer                          Output shape        Params
+-------------------------------------------------------------
+Input                          (12, 16)             0
+LSTM (128 units, return_seq)   (12, 128)            74,240
+Dropout (0.2)                  (12, 128)            0
+LSTM (32 units)                (32,)                20,608
+Dense (1, linear)              (1,)                 33
+-------------------------------------------------------------
+Total trainable parameters: 94,881
+
+Regularization: L2(0.001) on LSTM-1 kernel, L1(0.001) on LSTM-1 recurrent
+kernel, L1L2(0.001,0.001) on LSTM-2. Optimizer: Adam. Loss: MSE.
+
+------------------------------------------------------------
+2. PROPOSED / INNOVATION MODEL — build_attention_lstm()      
+------------------------------------------------------------
+Adds a custom TemporalAttention layer (additive/Bahdanau-style attention)
+over the second LSTM's per-timestep outputs, replacing the "just take the
+last hidden state" behaviour of a standard LSTM head. This lets the model
+learn which of the 12 preceding hours matter most for the next-hour
+temperature forecast, instead of treating the last timestep as sufficient.
+
+  score_t = tanh(h_t . W + b)        (per timestep t)
+  score_t = score_t . u
+  alpha   = softmax(score) over t    (attention weights, sum to 1)
+  context = sum_t alpha_t * h_t      (weighted pooling -> single vector)
+
+Variant A — Attention only (no bidirectional):
+Layer                          Output shape        Params
+-------------------------------------------------------------
+Input                          (12, 16)             0
+LSTM (128 units, return_seq)   (12, 128)            74,240
+Dropout (0.2)                  (12, 128)            0
+LSTM (32 units, return_seq)    (12, 32)             20,608
+TemporalAttention (32 units)   (32,)                1,088
+Dense (1, linear)              (1,)                 33
+-------------------------------------------------------------
+Total trainable parameters: 95,969  (+1,088 vs baseline for the
+attention weights W, b, u — a ~1.1% parameter increase)
+
+Variant B — Attention + Bidirectional first layer (the "Proposed" config
+used in the ablation study):
+Layer                            Output shape        Params
+-------------------------------------------------------------
+Input                            (12, 16)             0
+Bidirectional LSTM (128 units)   (12, 256)            148,480
+LSTM (32 units, return_seq)      (12, 32)             36,992
+TemporalAttention (32 units)     (32,)                1,088
+Dense (1, linear)                (1,)                 33
+-------------------------------------------------------------
+Total trainable parameters: 186,593
+
+------------------------------------------------------------
+3. BASELINES USED FOR COMPARISON — src/compare_sota.py
+------------------------------------------------------------
+- Persistence (naive): predicts next hour = current hour's temperature.
+  0 trainable parameters; the standard sanity-check baseline.
+- Linear Regression: fit on the flattened 12x16 window (192 inputs -> 1
+  output). 193 parameters.
+- Dense MLP (128 -> 32 -> 1) on the flattened window, dropout 0.2.
+- GRU (64 units) -> Dropout(0.2) -> Dense(1), same input windows.
+
+See results/comparison.csv for the actual measured RMSE/MAE/R2 of each
+(the sklearn-only run in this submission substitutes a scikit-learn
+MLPRegressor for the Dense/GRU rows since TensorFlow was unavailable in
+the environment used to draft this file — re-run compare_sota.py with
+TensorFlow installed for the final numbers).

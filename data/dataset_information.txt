@@ -1,0 +1,7 @@
+Dataset: 2024-2026.csv
+Source: ERA5 hourly reanalysis data (Delhi, India — lat 28.6, lon 77.2)
+Records: 23,256 hourly rows
+Columns: valid_time (datetime), 17 meteorological features, latitude, longitude
+Target: "Temp 2m" (2-metre air temperature in Kelvin)
+
+

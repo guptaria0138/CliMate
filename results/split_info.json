@@ -1,0 +1,8 @@
+{
+  "train_samples": 16279,
+  "train_pct": 70.0,
+  "val_samples": 3488,
+  "val_pct": 15.0,
+  "test_samples": 3489,
+  "test_pct": 15.0
+}
