@@ -1,11 +1,6 @@
 # CliMate
 
-## 1. Student Details
-- Name: **Ria Gupta**
-- Registration Number: **2430010386**
-- Section: **D**
-
-## 2. Dataset
+## 1. Dataset
 - Name: ERA5 reanalysis hourly weather data (Delhi, India — lat 28.6, lon 77.2)
 - Source: ECMWF / Copernicus Climate Data Store (ERA5 hourly reanalysis product)
 - Number of samples: 23,256 hourly records
@@ -32,7 +27,7 @@
 > here explicitly rather than silently repurposing a regression output as a
 > classification one.
 
-## 3. Model
+## 2. Model
 - **Baseline :** 2-layer LSTM (128 → 32 units) with L1/L2 regularization
   and dropout, followed by a Dense(1) regression head — `src/model.py::build_baseline_lstm`.
   94,881 trainable parameters (see `models/model_description.txt` for the full breakdown).
@@ -43,7 +38,7 @@
   (attention + bidirectional, the "Proposed" configuration in the ablation study).
 - Pretrained model: none — trained from scratch on this dataset.
 
-## 4. Hyperparameters
+## 3. Hyperparameters
 
 | Hyperparameter   | Value |
 | ---------------- | ----- |
@@ -57,7 +52,7 @@
 | Weight decay     | L2 = 0.001 (kernel), L1 = 0.001 (recurrent) |
 | Sequence length  | 12 hours |
 
-## 5. Hyperparameter Tuning
+## 4. Hyperparameter Tuning
 - **Parameters considered:** sequence length (6 / 12 / 24 hours), LSTM units
   (64 / 128), dropout (0.1–0.3), batch size (64 / 128 / 256).
 - **Method:** `ReduceLROnPlateau` and `EarlyStopping` (both in `src/train.py`)
@@ -72,7 +67,7 @@
 - **Reason for selection:** lowest validation loss with the smallest spread
   across folds (best bias/variance trade-off), not just the single best fold.
 
-## 6. Results
+## 5. Results
 
 | File | Contents |
 |---|---|
@@ -112,7 +107,7 @@ contribution of the attention layer and the bidirectional encoder by training
 all four combinations (none / attention only / bidirectional only / both) on
 the identical split.
 
-## 7. Innovation
+## 6. Innovation
 **What is the innovation compared with the baseline/SOTA methods?**
 A learned temporal-attention pooling layer is added over the LSTM's hidden
 states instead of using only the final timestep. Standard LSTM regressors
@@ -128,9 +123,9 @@ with each variant trained on the identical data split so the comparison
 isolates the architectural change rather than any difference in data or
 training procedure.
 
-## 8. Folder Structure
+## 7. Folder Structure
 ```text
-2430010386/
+CliMate/
 │
 ├── README.md
 ├── requirements.txt
